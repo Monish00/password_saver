@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "526630131451",
+    "project_id": "password-saver-9a5f2",
+    "storage_bucket": "password-saver-9a5f2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526630131451:android:a4b92aababeadc7495825e",
+        "android_client_info": {
+          "package_name": "com.example.password_authenticator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526630131451-btmd3mb14qk35kkin9jk8mtop71bvfkg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0rGudmQ8cyD9Alqrs4cSM7bDo1JS_3zg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526630131451-btmd3mb14qk35kkin9jk8mtop71bvfkg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "526630131451-qccg7q400hudjlf8dpj4aa4flecaha9v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.passwordAuthenticator"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
