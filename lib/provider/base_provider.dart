@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:installed_apps/app_info.dart';
+import 'package:installed_apps/installed_apps.dart';
 
 import '../helpers/error_handler.dart';
+import '../helpers/helpers.dart';
 import '../main.dart';
 import '../model/appCredential.dart';
 import '../model/result.dart';
@@ -11,6 +14,12 @@ import '../repository/firebase_database.dart';
 class BaseProvider extends ChangeNotifier {
   UserDetail? _currentUser;
   final List<AppCredential> _appDetails = [];
+  late final List<AppInfo> _appList;
+  Future<void> getAppList() async {
+    _appList = await InstalledApps.getInstalledApps();
+    notifyListeners();
+  }
+
   Future<void> signUp(UserDetail? user) async {
     try {
       Result? result =
@@ -45,6 +54,7 @@ class BaseProvider extends ChangeNotifier {
           scaffoldKey?.currentContext,
         );
         user?.uid = result?.data.user?.uid;
+        await storeCurrentUser(user);
         _currentUser = user;
         if (context != null) {
           // getAppDetails();
@@ -75,6 +85,40 @@ class BaseProvider extends ChangeNotifier {
           if (context != null) {
             Navigator.of(context).pop();
           }
+        } else {
+          snackBarMessage(
+            result?.errorMessage,
+            scaffoldKey?.currentContext,
+          );
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getUserDetails() async {
+    try {
+      final uid = await getCurrentUser();
+      if (uid != null) {
+        Result? result = await FirebaseDB.db.getUserDetails(uid);
+
+        if (result?.successMessage != null) {
+          final data = result?.data;
+          if (data != null) {
+            final userDetail = data.data();
+            _currentUser = UserDetail(
+              userName: userDetail['name'],
+              email: userDetail['email'],
+              uid: uid,
+            );
+            await getAppDetails();
+          }
+          snackBarMessage(
+            result?.successMessage,
+            scaffoldKey?.currentContext,
+          );
+          notifyListeners();
         } else {
           snackBarMessage(
             result?.errorMessage,
@@ -136,6 +180,34 @@ class BaseProvider extends ChangeNotifier {
             result?.successMessage,
             scaffoldKey?.currentContext,
           );
+        } else {
+          snackBarMessage(
+            result?.errorMessage,
+            scaffoldKey?.currentContext,
+          );
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> updateCredential(AppCredential? credential) async {
+    try {
+      final uid = _currentUser?.uid;
+      if (uid != null) {
+        Result? result =
+            await FirebaseDB.db.updateAppCredential(_currentUser, credential);
+        if (result?.successMessage != null) {
+          getAppDetails();
+          final context = scaffoldKey?.currentContext;
+          snackBarMessage(
+            result?.successMessage,
+            scaffoldKey?.currentContext,
+          );
+          if (context != null) {
+            Navigator.of(context).pop();
+          }
         } else {
           snackBarMessage(
             result?.errorMessage,

@@ -7,6 +7,7 @@ import '../model/user.dart';
 class FirebaseAuthentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
   static final authentication = FirebaseAuthentication();
   Future<Result?> signUp({UserDetail? user}) async {
     print('################ SignIn ##############');

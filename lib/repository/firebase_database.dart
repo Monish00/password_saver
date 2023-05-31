@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../model/appCredential.dart';
 import '../model/result.dart';
@@ -32,7 +31,7 @@ class FirebaseDB {
       } else {
         return Result(errorMessage: 'Something went wrong');
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       return Result(errorMessage: e.message ?? 'Something went wrong');
     }
   }
@@ -53,13 +52,32 @@ class FirebaseDB {
       } else {
         return Result(errorMessage: 'Something went wrong');
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
+      return Result(errorMessage: e.message ?? 'Something went wrong');
+    }
+  }
+
+  Future<Result?> getUserDetails(String? uid) async {
+    try {
+      if (uid != null) {
+        DocumentSnapshot<Map<String, dynamic>> appCredentials =
+            await _fireStore.collection('users').doc(uid).get();
+        return Result(
+          successMessage: 'User credential retrieved',
+          data: appCredentials,
+        );
+      } else {
+        return Result(errorMessage: 'Something went wrong');
+      }
+    } on FirebaseException catch (e) {
       return Result(errorMessage: e.message ?? 'Something went wrong');
     }
   }
 
   Future<Result?> deleteAppCredential(
-      UserDetail? user, AppCredential? credential) async {
+    UserDetail? user,
+    AppCredential? credential,
+  ) async {
     try {
       final uid = user?.uid;
       final doc = credential?.appName;
@@ -76,7 +94,36 @@ class FirebaseDB {
       } else {
         return Result(errorMessage: 'Something went wrong');
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
+      return Result(errorMessage: e.message ?? 'Something went wrong');
+    }
+  }
+
+  Future<Result?> updateAppCredential(
+    UserDetail? user,
+    AppCredential? credential,
+  ) async {
+    try {
+      final uid = user?.uid;
+      final doc = credential?.appName;
+      if (uid != null && doc != null) {
+        await _fireStore
+            .collection('users')
+            .doc(uid)
+            .collection('AppData')
+            .doc(doc)
+            .update({
+          'appName': credential?.appName,
+          'userName': credential?.userName,
+          'password': credential?.password,
+        });
+        return Result(
+          successMessage: 'App credential updated successfully',
+        );
+      } else {
+        return Result(errorMessage: 'Something went wrong');
+      }
+    } on FirebaseException catch (e) {
       return Result(errorMessage: e.message ?? 'Something went wrong');
     }
   }

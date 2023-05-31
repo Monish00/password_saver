@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/color_config.dart';
+import '../helpers/error_handler.dart';
+import '../helpers/helpers.dart';
 import '../provider/base_provider.dart';
-import '../widgets/AddPasswordWidget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
-    context.read<BaseProvider>().getAppDetails();
+    context.read<BaseProvider>().getUserDetails();
     super.initState();
   }
 
@@ -99,7 +100,8 @@ class _HomePageState extends State<HomePage> {
                                   IconButton(
                                     onPressed: () {
                                       provider.deleteCredential(
-                                          provider.appDetails[index]);
+                                        provider.appDetails[index],
+                                      );
                                     },
                                     icon: Icon(
                                       Icons.delete_outline,
@@ -110,7 +112,13 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      dialog(
+                                        context,
+                                        isUpdate: true,
+                                        credential: provider.appDetails[index],
+                                      );
+                                    },
                                     icon: Icon(
                                       Icons.edit_note_sharp,
                                       color: Theme.of(context)
@@ -177,14 +185,62 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: const AddPasswordWidget(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          dialog(context);
+        },
+        child: const Icon(
+          Icons.add,
+        ),
+      ),
       drawer: Drawer(
         width: 200,
-        child: Column(
-          children: const [
-            CircleAvatar(),
-            Text('Welcome'),
-          ],
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top,
+            left: 8,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CircleAvatar(
+                radius: 40,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Welcome',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 22,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              MaterialButton(
+                onPressed: () {
+                  removeCurrentUser();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
+                },
+                child: Text(
+                  'LogOut',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
